@@ -36,8 +36,8 @@ Now you are ready to run.
 
 ## Data formatting
 
-Your input data needs to be gzipped file(s) in a folder. Each gzipped file should contain part of your data, where each document will be represented in JSON format on its own line. Each document can contain arbitrary amount of metadata that will be added to the found clusters at the end, but the bare bone data structure has fields text and doc_id. Text contains your text and doc_id is the name of the document.  
-Example could look like this:
+Your input data needs to be gzipped file(s) in a folder. Each gzipped file should contain part of your data, where each document will be represented in JSON format on its own line. Each document can contain arbitrary amount of metadata that will be added to the found clusters at the end of the program, but the bare bone data structure has fields text and doc_id. Text contains your text and doc_id is the name of the document. Use only ASCII in doc_id names, since other characters may cause complications while running the program.
+For example the lines could look like this:
 ```
 {"title": "NewspaperX", "date": "1907-03-18", "doc_id": "newspaperX_1907_03_18", "text": <text>}
 {"title": "NewspaperY", "date": "1907-03-19", "doc_id": "newspaperY_1907_03_19", "text": <text>}
@@ -49,7 +49,7 @@ Here, title and date fields are optional metadata. To take full advantage of mul
 This software can be run in two ways: in one go, or in batches.
 
 ### In one go
-If your data is small enough, you may want to run it in one go. This can be done by running run_full.py. This goes through all the above steps.
+If your data is small enough, you may want to run it in one go. This can be done by running run_full.py. This goes through all the steps.
 
 run_full.py arguments:
 
@@ -69,7 +69,7 @@ run_full.py arguments:
 ### Batches
 
 #### 1st phase: data_preparer.py
-First begin by running the *data_preparer.py* file. This will read your data, produce databases, and encode the data to proteins (For BLAST to work).
+Data preparer procudes databases that BLAST can use to compare the data. First begin by running the *data_preparer.py* file. This will read your data, produce databases, and encode the data to proteins (For BLAST to work).
 Data preparer has multiple arguments that must be specified:
 
 | Argument | Description |
@@ -80,15 +80,24 @@ Data preparer has multiple arguments that must be specified:
 | `language` | Which language the data is in. Currently supports "ENG" and "FIN" out of the box. Others must be manually added. |
 | `split_size` | The size of the splits, if the document should be split into parts. Otherwise, ignore. This is useful if the documents have vastly different lengths, so splitting the data will allow each batch to be approximately same sized. |
 
-Data preparer procudes databases that BLAST can use to compare the data.
+Data preparer creates the following file structure with the output folder:
+
+-`output folder`
+  I- `batches`
+  I- `clusters`
+  I- `db`
+  I- `encoded`
+  I- `info`
+  I- `subgraphs`
+
 #### 2nd phase: blast_batches.py
-This is the part that should be ran in batches on cluster computers if they're available, as this is where the actual computation happens.
+This is the part that should be run in batches on cluster computers if able, as this is where the actual computation happens.
 
 blast_batches.py arguments:
 
 | Argument | Description |
 | --- | --- |
-| `output_folder` | This is the location of the folder that data_preparer produced.  |
+| `output_folder` | The path to the folder that data_preparer produced.  |
 | `local_folder` | Folder where to copy the data first. This is useful if you're running the data on cluster computers and want to copy the data to the cluster node first. (i.e. shared_location --> local_location) |
 | `batch_folder` | Folder where to copy the results. This can be set to be the batches folder in output_folder, if you are not copying the the folder to local nodes or don't mind unnecessary transfers. |
 | `threads` | Number of threads to use. |
@@ -102,7 +111,6 @@ blast_batches.py arguments:
 After running all batches, you need to copy all the results into *batches* folder in *output_folder*, if you didn't set this in the previous step.
 
 #### 3rd phase: running clusterizer.py
-
 Clusterizer.py reads in the batches. This can be run in two ways, as well. Either load everything into memory at once, or clusterize the data in batches. The style is of course faster, but takes more memory.
 
 clusterizer.py arguments:
