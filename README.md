@@ -1,6 +1,9 @@
 # Text Reuse Detection with BLAST
 
-This is a repository for software to detect and clusterize text reuse. The software takes advantage of NCBI BLAST (Basic Local Alignment Search Tool, developed for aligning biomedical sequences) to detect reuse. The data is encoded into protein sequences, which BLAST can read. It then finds pairs where parts of documents overlap. These pairs are then clusterized based on their offset values, so that overlapping passages will be considered to be part of a same cluster.
+This is a repository for software to detect and clusterize text reuse, developed by Aleksi Vesanto. The original GitHub page can be found here:
+https://github.com/avjves/textreuse-blast
+
+The software takes advantage of NCBI BLAST (Basic Local Alignment Search Tool, developed for aligning biomedical sequences) to detect reuse. The data is encoded into protein sequences, which BLAST can read. It then finds pairs where parts of documents overlap. These pairs are then clusterized based on their offset values, so that overlapping passages will be considered to be part of a same cluster.
 The software takes advantage of multiple cores and it can be run in batches, so running it on cluster computers is possible. Depending on the size of the data, this might be a necessity, as the software can eat a lot of processing power.
 
 ## Installation
@@ -48,8 +51,13 @@ Here, title and date fields are optional metadata. To take full advantage of mul
 
 This software can be run in two ways: in one go, or in batches.
 
+Example run commands shown in this documentation use the following file structure:
+
+![Picture2](https://user-images.githubusercontent.com/60101134/154259965-76dd2fef-3392-4d7a-b931-29b5ecabb7f4.png)
+
+
 ### In one go
-If your data is small enough, you may want to run it in one go. This can be done by running run_full.py. This goes through all the steps.
+If your data is small enough, you may want to run it in one go. This can be done by running run_full.py. This goes through all four run steps.
 
 run_full.py arguments:
 
@@ -80,15 +88,15 @@ Data preparer has multiple arguments that must be specified:
 | `language` | Which language the data is in. Currently supports "ENG" and "FIN" out of the box. Others must be manually added. |
 | `split_size` | The size of the splits, if the document should be split into parts. Otherwise, ignore. This is useful if the documents have vastly different lengths, so splitting the data will allow each batch to be approximately same sized. |
 
-Data preparer creates the following file structure with the output folder:
+An example of a run command:
+```
+python3 text_reuse_BLAST/data_preparer.py --data_location BLAST_run/input_files --output_folder BLAST_run/results --threads=4
+--language="FIN"
+```
 
--`output folder`
-  I- `batches`
-  I- `clusters`
-  I- `db`
-  I- `encoded`
-  I- `info`
-  I- `subgraphs`
+Data preparer creates the following file structure within the output folder:
+
+![Picture3](https://user-images.githubusercontent.com/60101134/154286016-1b2ac00c-a901-483d-8f2c-e427e78e8a95.png)
 
 #### 2nd phase: blast_batches.py
 This is the part that should be run in batches on cluster computers if able, as this is where the actual computation happens.
@@ -107,6 +115,12 @@ blast_batches.py arguments:
 | `text_count` | Must be the ACTUAL number of documents in the BLAST database. If you used split_size to split the data in parts, you may need to check this manually. Check extra information part to get help.|
 | `qpi` | Queries to run per iteration. This must be constant between batches. |
 | `preset` | Preset for preprogrammed cluster computer. Currently only working option = "taito". |
+
+Example:
+```
+python3 text_reuse_BLAST/BLAST_batches.py --output_folder BLAST_run/results --batch_folder BLAST_run/results/batches
+--threads=4 --e_value=1e-15 --word_size=6 --iter=0 --text_count=2000000 --qpi=1000
+```
 
 After running all batches, you need to copy all the results into *batches* folder in *output_folder*, if you didn't set this in the previous step.
 
@@ -128,6 +142,12 @@ clusterizer.py arguments:
 | `alignment_ranges` | Hit length ranges and what minimum alignment score to use there. Format: min_length_1,alignment_score_1,max_length_1;min_length_2,alignment_score_2,max_length_2 Example: 0,0.85,100;100,0.75,150 |
 | `threads` | Number of threads to use. |
 
+Example:
+```
+python3 text_reuse_BLAST/clusterizer.py --output_folder BLAST_run/results --min_length=300 --node_similarity=0.90
+--files_per_iter=10000 --clusters_per_file=1000 --min_align_score=0.0 --threads=4
+```
+
 #### 4th phase: filler.py
 
 This fills the clusters with actual text, instead of just document offsets.
@@ -145,6 +165,10 @@ filler.py arguments:
 | `custom_unfilled` | Custom location of the unfilled clusters. |
 | `custom_filled` | Custom output location for the filled clusters. |
 
+Example:
+```
+python3 text_reuse_BLAST/filler.py --output_folder BLAST_run/results --language=FIN --threads=4
+```
 
 At this point, the filled clusters can be found in the *clusters/filled* folder in the *output_folder*.
 
