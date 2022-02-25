@@ -52,7 +52,9 @@ This software can be run in two ways: in one go, or in batches.
 
 Example run commands shown in this documentation use the following file structure:
 
-![Picture2](https://user-images.githubusercontent.com/60101134/154678052-12945e3c-3c20-4420-abe5-7a52821669ec.png)
+![sample_dirs_light](https://user-images.githubusercontent.com/60101134/154679831-3b5fa2ec-3dc0-4442-8d9f-e2607e9b5fc6.png#gh-light-mode-only)
+![sample_dirs_dark](https://user-images.githubusercontent.com/60101134/154679842-70427857-e313-47e6-a4d4-1f0f7c927ace.png#gh-dark-mode-only)
+
 
 ### In one go
 If your data is small enough, you may want to run it in one go. This can be done by running *run_full.py*. This goes through all four steps explained in the **Batches** section.
@@ -67,7 +69,7 @@ If your data is small enough, you may want to run it in one go. This can be done
 | `threads` | Number of threads to use. |
 | `split_size` | The size of the splits, if the document should be split into parts. Otherwise, ignore. This is useful if the documents have vastly different lengths, so splitting the data will allow each batch to be approximately same sized. |
 | `e_value` | Setting for BLAST. This should be set to be very low. Lowering this value will decrease the required computational time, but will also cut down shorter hits from the results. Default 1e-15. |
-| `word_size` | Setting for BLAST. This is the size of word seeds to use to when finding repeated passages. Lowering will increase computation time, but if the data quality is bad, it might be necessary. Default=6. Range=2-7 |
+| `word_size` | Setting for BLAST. This is the size of word seeds to use when finding repeated passages. Lowering will increase computation time, but if the data quality is bad, it might be necessary. Default=6. Range=2-7 |
 | `min_length` | Minimum length of hits to clusterize. Decreasing this wilĺ not make the program a lot faster, as BLAST will still find these and they are just ignored in the clusterizer part. |
 | `max_length` | Maximum length of hits to clusterize. |
 
@@ -75,7 +77,7 @@ If your data is small enough, you may want to run it in one go. This can be done
 ### Batches
 
 #### 1st phase: data_preparer.py
-Data preparer procudes databases that BLAST can use to compare the data. First begin by running the *data_preparer.py* file. This will read your data, produce databases, and encode the data to proteins (For BLAST to work).
+Data preparer procudes databases that BLAST can use to compare the data. First begin by running the *data_preparer.py* file. This will read your data, produce databases, and encode the data to proteins (for BLAST to work).
 Data preparer has multiple arguments that must be specified:
 
 | Argument | Description |
@@ -93,7 +95,9 @@ python3 text_reuse_blast/data_preparer.py --data_location blast_run/input_files 
 
 Data preparer creates the following directory structure within the output folder:
 
-![Picture3](https://user-images.githubusercontent.com/60101134/154286016-1b2ac00c-a901-483d-8f2c-e427e78e8a95.png)
+![preparer_dirs_light](https://user-images.githubusercontent.com/60101134/154679966-14aeea43-20ef-44f1-9520-f997128e40e6.png#gh-light-mode-only)
+![preparer_dirs_dark](https://user-images.githubusercontent.com/60101134/154679973-9104aa12-c397-4ffa-82b7-bb65e3ba2c22.png#gh-dark-mode-only)
+
 
 #### 2nd phase: blast_batches.py
 This is the part that should be run in batches on cluster computers if able, as this is where the actual computation happens.
@@ -102,14 +106,14 @@ This is the part that should be run in batches on cluster computers if able, as 
 
 | Argument | Description |
 | --- | --- |
-| `output_folder` | The path to the folder that data_preparer produced.  |
+| `output_folder` | The path to the folder that *data_preparer* produced.  |
 | `local_folder` | Folder where to copy the data first. This is useful if you're running the data on cluster computers and want to copy the data to the cluster node first. (i.e. shared_location --> local_location) |
-| `batch_folder` | Folder where to copy the results. This can be set to be the batches folder in output_folder, if you are not copying the the folder to local nodes or don't mind unnecessary transfers. |
+| `batch_folder` | Folder where to copy the results. This can be set to be the batches folder in *output_folder*, if you are not copying the the folder to local nodes or don't mind unnecessary transfers. |
 | `threads` | Number of threads to use. |
 | `e_value` | Setting for BLAST. This should be set to be very low. Lowering this value will decrease the required computational time, but will also cut down shorter hits from the results. Default 1e-15. |
-| `word_size` | Setting for BLAST. This is the size of word seeds to use to when finding repeated passages. Lowering will increase computation time, but if the data quality is bad, it might be necessary. Default=6. Range=2-7 |
-| `iter` | Current iteration. This number needs to change for every batch. i.e, start from 0 -->|
-| `text_count` | Must be the ACTUAL number of documents in the BLAST database. If you used split_size to split the data in parts, you may need to check this manually. See [finding the text count from a DB](https://github.com/maraho/textreuse-blast/edit/master/README.md#finding-the-text-count-from-a-db). |
+| `word_size` | Setting for BLAST. This is the size of word seeds to use when finding repeated passages. Lowering will increase computation time, but if the data quality is bad, it might be necessary. Default=6. Range=2-7 |
+| `iter` | Current iteration. This number needs to increase by one for each batch, starting from 0. The value of the last *iter* can be determined by dividing *text_count* with *qpi* and rounding down the result. Ie. ⌊ 1 500 000 (text_count) / 1 600 (qpi) ⌋ = 937 (last iter). |
+| `text_count` | Must be the ACTUAL number of documents in the BLAST database. If you used *split_size* to split the data in parts, you may need to check this manually. See [finding the text count from a DB](https://github.com/maraho/textreuse-blast/edit/master/README.md#finding-the-text-count-from-a-db). |
 | `qpi` | Queries to run per iteration. This must be constant between batches. |
 | `preset` | Preset for preprogrammed cluster computer. Currently only working option = "taito". |
 
@@ -191,4 +195,4 @@ To add support to a new language, you need to edit *text_endocer.py*. Under *map
 elif language.lower() == "<language name>":
 			return {"_": "Y", "_": "W", "_": "R", "_": "N", "_": "M", "_": "S", "_": "A", "_": "P", "_": "Q", "_": "D", "_": "H", "_": "T", "_": "G", "_": "F", "_": "I", "_": "B", "_": "V", "_": "K", "_": "C", "_": "Z", "_": "E", "_": "X", "_": "W"}
 ```
-Replace the underscores with the top 23 most used letters of the language in **lower case**. The pairing and order of the letters are irrelevant.
+Replace the underscores with the top 23 most used letters of the language. Both the letters and the name of the language have to be in **lower case**. The pairing and order of the letters are irrelevant.
