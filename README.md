@@ -65,7 +65,7 @@ If your data is small enough, you may want to run it in one go. This can be done
 | --- | --- |
 | `data_folder` | Where the gzipped data files are located. |
 | `output_folder` | Folder where to save all the data. |
-| `language` | Which language the data is in. Currently supports "ENG" and "FIN" out of the box. Others must be manually added. See [adding a new language](https://github.com/maraho/textreuse-blast/edit/master/README.md#adding-a-new-language-to-text-re-use-blast). |
+| `language` | Which language the data is in. Currently supports "ENG", "RUS" and "FIN" out of the box. Others must be manually added. See [adding a new language](https://github.com/maraho/textreuse-blast/edit/master/README.md#adding-a-new-language-to-text-re-use-blast). |
 | `threads` | Number of threads to use. |
 | `split_size` | The size of the splits, if the document should be split into parts. Otherwise, ignore. This is useful if the documents have vastly different lengths, so splitting the data will allow each batch to be approximately same sized. |
 | `e_value` | Setting for BLAST. This should be set to be very low. Lowering this value will decrease the required computational time, but will also cut down shorter hits from the results. Default 1e-15. |
@@ -85,7 +85,7 @@ Data preparer has multiple arguments that must be specified:
 | `data_location` | Location of the gzipped data files. |
 | `output_folder` | Output folder for the data. This folder will be used in subsequent parts as well. |
 | `threads` | Number of threads to use. |
-| `language` | Which language the data is in. Currently supports "ENG" and "FIN" out of the box. Others must be manually added. See [adding a new language](https://github.com/maraho/textreuse-blast/edit/master/README.md#adding-a-new-language-to-text-re-use-blast). |
+| `language` | Which language the data is in. Currently supports "ENG", "RUS" and "FIN" out of the box. Others must be manually added. See [adding a new language](https://github.com/maraho/textreuse-blast/edit/master/README.md#adding-a-new-language-to-text-re-use-blast). |
 | `split_size` | The size of the splits, if the document should be split into parts. Otherwise, ignore. This is useful if the documents have vastly different lengths, so splitting the data will allow each batch to be approximately same sized. |
 
 An example of a run command:
@@ -156,7 +156,7 @@ This fills the clusters with actual text, instead of just document offsets.
 | Argument | Description |
 | --- | --- |
 | `output_folder` | This is the location of the folder that data_preparer produced. |
-| `language` | Which language the data is in. Currently supports "ENG" and "FIN" out of the box. Others must be manually added. See [adding a new language](https://github.com/maraho/textreuse-blast/edit/master/README.md#adding-a-new-language-to-text-re-use-blast). |
+| `language` | Which language the data is in. Currently supports "ENG", "RUS" and "FIN" out of the box. Others must be manually added. See [adding a new language](https://github.com/maraho/textreuse-blast/edit/master/README.md#adding-a-new-language-to-text-re-use-blast). |
 | `threads` | Number of threads to use. |
 | `split_size` | The size of the splits if used. |
 | `custom_data_DBs` | If you want to use a custom data DB(s) instead of assuming there is one in the given output_folder location. Format: 'path1;path2' |
