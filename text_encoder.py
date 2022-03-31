@@ -16,6 +16,8 @@ class TextEncoder:
 		elif language.lower() == "eng_space":
 			return {"o": "Y", "a": "W", "t": "R", "f": "N", "w": "M", "h": "S", "l": "A", "v": "P", "y": "Q", " ": "D", "e": "H", "r": "T", "i": "G", "s": "F", "p": "I", "c": "B", "b": "V", "m": "K", "d": "C", "g": "Z", "u": "E", ".": "X", "n": "W"}
 
+		elif language.lower() == "rus":
+			return {"о": "Y", "е": "W", "а": "R", "и": "N", "н": "M", "т": "S", "с": "A", "л": "P", "в": "Q", "р": "D", "к": "H", "м": "T", "д": "G", "п": "F", "ы": "I", "у": "B", "б": "V", "я": "K", "ь": "C", "г": "Z", "з": "E", "ч": "X", "й": "W"}
 
 	''' Preprocess text by removing extra whitespaces '''
 	def preprocess_text(self, text):
